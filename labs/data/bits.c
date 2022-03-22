@@ -138,7 +138,7 @@ NOTES:
  *   Rating: 1
  */
 int bitAnd(int x, int y) {
-  return ~((~x)|(~y));
+    return ~((~x)|(~y));
 }
 /* 
  * getByte - Extract byte n from word x
@@ -149,8 +149,7 @@ int bitAnd(int x, int y) {
  *   Rating: 2
  */
 int getByte(int x, int n) {
-  int mask=0xff;
-  return (x>>(n<<3))&mask;
+    return ((x>>(n<<3)) & 0xff);
 }
 /* 
  * logicalShift - shift x to the right by n, using a logical shift
@@ -161,13 +160,17 @@ int getByte(int x, int n) {
  *   Rating: 3 
  */
 int logicalShift(int x, int n) {
-  int mask=((0x1<<(32+~n))+~0)|(0x1<<(32+~n));
-  return (x>>n)&mask;
-/*  int c=((0x1<<31>>31)^0x1)<<31;
-  return ((x>>n)^(c>>n)); it's wrong for 0x0>>0x1==0x0
-*/
-/*Bug: return ~((~x)>>n); it's wrong for ~x is postive while x is negative
-*/ 
+    int mask = ((0x1<<31+(~n)+1)+(~0)) | (0x1<<(31+(~n+1)));
+    return ((x>>n) & mask);
+
+    // 网友 参考做法
+    // int mask=((0x1<<(32+~n))+~0)|(0x1<<(32+~n));
+    // return (x>>n)&mask;
+    /*  int c=((0x1<<31>>31)^0x1)<<31;
+    return ((x>>n)^(c>>n)); it's wrong for 0x0>>0x1==0x0
+    */
+    /*Bug: return ~((~x)>>n); it's wrong for ~x is postive while x is negative
+    */ 
 }
 /*
  * bitCount - returns count of number of 1's in word
@@ -177,20 +180,54 @@ int logicalShift(int x, int n) {
  *   Rating: 4
  */
 int bitCount(int x) {
-  int _mask1=(0x55)|((0x55)<<8);
-  int _mask2=(0x33)|((0x33)<<8);
-  int _mask3=(0x0f)|((0x0f)<<8);
-  int mask1=(_mask1)|(_mask1<<16);
-  int mask2=(_mask2)|(_mask2<<16);
-  int mask3=(_mask3)|(_mask3<<16);
-  int mask4=(0xff)|(0xff<<16);
-  int mask5=(0xff)|(0xff<<8);
-  int ans=(x&mask1)+((x>>1)&mask1);
-  ans=(ans&mask2)+((ans>>2)&mask2);
-  ans=(ans&mask3)+((ans>>4)&mask3);
-  ans=(ans&mask4)+((ans>>8)&mask4);
-  ans=(ans&mask5)+((ans>>16)&mask5);
-  return ans;
+	// 构造 0x55555555
+	// int tmpmask1 = (0x55)|(0x55<<8);
+	// int mask1 = (tmpmask1)|(tmpmask1<<16);
+
+	// // 构造 0x33333333
+	// int tmpmask2 = (0x33)|(0x33<<8);
+	// int mask2 = (tmpmask2)|(tmpmask2<<16);
+
+	// // 构造 0x0F0F0F0F
+	// int tmpmask3 = (0x0F)|(0x0F<<8);
+	// int mask3 = (tmpmask3)|(tmpmask3<<16);
+
+	// // 构造0x00FF00FF
+	// int mask4 = (0XFF)|(0XFF<<16);
+
+	// // 构造0xFFFF
+	// int mask5 = (0XFF)|(0XFF<<8);
+
+	// int result = 0;
+
+	// result = result + (x & mask1);
+	// result = result + ((x>>1)& mask1);
+
+	// result = ((result >> 2) & mask2) + (result & mask2);
+
+	// result = ((result >> 4) & mask3) + (result & mask3);
+
+	// result = ((result >> 8) & mask4) + (result & mask4);
+
+	// result = ((result >> 16) & mask5) + (result & mask5);
+
+	// return result;
+
+	// 网友解答
+	int _mask1=(0x55)|((0x55)<<8);
+	int _mask2=(0x33)|((0x33)<<8);
+	int _mask3=(0x0f)|((0x0f)<<8);
+	int mask1=(_mask1)|(_mask1<<16);
+	int mask2=(_mask2)|(_mask2<<16);
+	int mask3=(_mask3)|(_mask3<<16);
+	int mask4=(0xff)|(0xff<<16);
+	int mask5=(0xff)|(0xff<<8);
+	int ans=(x&mask1)+((x>>1)&mask1);
+	ans=(ans&mask2)+((ans>>2)&mask2);
+	ans=(ans&mask3)+((ans>>4)&mask3);
+	ans=(ans&mask4)+((ans>>8)&mask4);
+	ans=(ans&mask5)+((ans>>16)&mask5);
+	return ans;
 }
 /* 
  * bang - Compute !x without using !
