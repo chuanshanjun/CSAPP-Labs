@@ -258,7 +258,8 @@ int bang(int x) {
  *   Rating: 1
  */
 int tmin(void) {
-  return 0x1<<31;/*tmin==~tmax*/
+	return 0x1<<31;
+//   return 0x1<<31;/*tmin==~tmax*/
 }
 /* 
  * fitsBits - return 1 if x can be represented as an 
@@ -270,9 +271,14 @@ int tmin(void) {
  *   Rating: 2
  */
 int fitsBits(int x, int n) {
-  int c=33+~n;
-  int t=(x<<c)>>c;
-  return !(x^t);
+    // 构建32-n(32 + ((~n) + 1)) 
+    int c = 33 + (~n);
+    int t = (x<<c)>>c;
+    return !(x^t);
+    
+//   int c=33+~n;
+//   int t=(x<<c)>>c;
+//   return !(x^t);
 }
 /* 
  * divpwr2 - Compute x/(2^n), for 0 <= n <= 30
@@ -283,8 +289,11 @@ int fitsBits(int x, int n) {
  *   Rating: 2
  */
 int divpwr2(int x, int n) {
-  int bias=(x>>31)&((0x1<<n)+~0);
-  return (x+bias)>>n;
+    int bias = (x>>31)&((0x1<<n)+~0);
+    return (x+bias)>>n;
+
+    // int bias=(x>>31)&((0x1<<n)+~0);
+    // return (x+bias)>>n;
 }
 /* 
  * negate - return -x 
@@ -294,7 +303,8 @@ int divpwr2(int x, int n) {
  *   Rating: 2
  */
 int negate(int x) {
-  return ~x+1;
+    return ~x+1;
+    // return ~x+1;
 }
 /* 
  * isPositive - return 1 if x > 0, return 0 otherwise 
@@ -304,7 +314,9 @@ int negate(int x) {
  *   Rating: 3
  */
 int isPositive(int x) {
-  return !(!(x))&!((x>>31)&(0x1));
+    int nsgn = !(x>>31);
+    return nsgn ^ !x ;
+//   return !(!(x))&!((x>>31)&(0x1));
 }
 /* 
  * isLessOrEqual - if x <= y  then return 1, else return 0 
@@ -314,10 +326,18 @@ int isPositive(int x) {
  *   Rating: 3
  */
 int isLessOrEqual(int x, int y) {
-  int val=!!((x+~y)>>31);
-  x=x>>31;
-  y=y>>31;
-  return (!!x|!y)&((!!x&!y)|(val));
+    // 1 先取符号位
+    int x_symbol = (x>>31)&0x1;
+    int y_symbol = (y>>31)&0x1;
+    int isDiff = x_symbol ^ y_symbol;
+    // 1 如果x,y异号且x<0, 2 x,y同号,x-y<0 3 x与y相等则直接异或
+    int sub_symbol = ((x+(~y+1))>>31)&0x1;
+    return (isDiff & x_symbol) | (!isDiff & sub_symbol) | (!(x^y));
+
+//   int val=!!((x+~y)>>31);
+//   x=x>>31;
+//   y=y>>31;
+//   return (!!x|!y)&((!!x&!y)|(val));
 }
 /*
  * ilog2 - return floor(log base 2 of x), where x > 0
@@ -327,13 +347,24 @@ int isLessOrEqual(int x, int y) {
  *   Rating: 4
  */
 int ilog2(int x) {
-  int ans=0;
-  ans=(!!(x>>(16)))<<4;
-  ans=ans+((!!(x>>(8+ans)))<<3);
-  ans=ans+((!!(x>>(4+ans)))<<2);
-  ans=ans+((!!(x>>(2+ans)))<<1);
-  ans=ans+((!!(x>>(1+ans)))<<0);
-  return ans;
+    
+
+
+
+
+
+
+
+
+
+
+    // int ans=0;
+    // ans=(!!(x>>(16)))<<4;
+    // ans=ans+((!!(x>>(8+ans)))<<3);
+    // ans=ans+((!!(x>>(4+ans)))<<2);
+    // ans=ans+((!!(x>>(2+ans)))<<1);
+    // ans=ans+((!!(x>>(1+ans)))<<0);
+    // return ans;
 }
 /* 
  * float_neg - Return bit-level equivalent of expression -f for
